@@ -22,8 +22,19 @@ typedef struct node{
 
 node *adjList[MAX];
 double sum[MAX] = {0};
-double pr[MAX] = {0};
+//double pr[MAX] = {0};
 int numNodes = 0;
+int numThreads = 0;
+int chunkSize = 0;
+pthread_barrier_t barrier;
+
+typedef struct thread_params {
+    int start;
+    int end;
+    node** adjList;
+} thread_params;
+
+
 
 int nodeExists(node *adjList[], int vertex) {
     if (adjList[vertex] == NULL)
@@ -67,47 +78,71 @@ void addEdge(node** adjList, int src, int dest) {
 }
 
 
+void* pagerank_thread(void* arg) {
+    // Cast the void* argument to the correct type
+    thread_params* params = (thread_params*) arg;
+    
+    // Iterate through the nodes within the range
+    for (int i = params->start; i < params->end; i++) {
+        if (!nodeExists(params->adjList, i)) 
+            continue;
+        
+        // Reset the pagerank value to 0 for this node
+        double pr = 0;
+        
+        // Calculate the pagerank value for this node based on its neighbors' values
+        node *curr = params->adjList[i]->next; 
+        while (curr != NULL) { // for each neighbor
+            if (params->adjList[i]->numOfNeighbors != 0) {
+                pr += params->adjList[curr->vertex]->value / params->adjList[i]->numOfNeighbors;
+            }
+            curr = curr->next;
+        }
+        double pagerank = (1.0 - DAMPING_FACTOR) + DAMPING_FACTOR * pr;
+        params->adjList[i]->value = pagerank;
+    }
+    
+    // Exit the thread
+    pthread_exit(NULL);
+}
+
 void pagerank(node *adjList[], int numNodes, int numIterations) {
+    // Create an array of thread IDs and thread parameters
+    pthread_t threads[numThreads];
+    thread_params params[numThreads];
     
-    
+    // Initialize the barrier
+    pthread_barrier_init(&barrier, NULL, numThreads);
+
     // Run PageRank algorithm for numIterations iterations
     for (int iter = 0; iter < numIterations; iter++) {
-        for (int i = 0; i < MAX; i++) {
-            if (!nodeExists(adjList, i)) 
-                continue;
-            if (adjList[i]->numOfNeighbors != 0)
-                sum[i] =  adjList[i]->value/adjList[i]->numOfNeighbors;
-            else 
-                sum[i] = 0;
-            //printf("sum of neighbors for %d: %f and numOfNeighbors: %d and value: %f \n",i , sum[i], adjList[i]->numOfNeighbors, adjList[i]->value);    
-        } 
+        // Create and start the threads
+        for (int i = 0; i < numThreads; i++) {
+            params[i].start = i * chunkSize;
+            params[i].end = (i == numThreads - 1) ? numNodes : params[i].start + chunkSize; // last thread gets the remainder as to not get out of bounds
+            params[i].adjList = adjList;
+            pthread_create(&threads[i], NULL, pagerank_thread, (void*) &params[i]);
+        }
         
-        for (int i = 0; i < MAX; i++) {
-            if (!nodeExists(adjList, i)) 
-                continue;
-            
-            //printf("sum of neighbors for %d: %f\n",i , sum[i]);
-            pr[i] = 0;
-            node *curr = adjList[i]->next; 
-            while (curr != NULL) { // for each neighbor
-                pr[i] += sum[curr->vertex];
-                //printf("added %f to pr[%d] from vertex %d\n", sum[curr->vertex], i, curr->vertex);
-                curr = curr->next;
-            }
-            //printf("pr for %d: %f\n", i, pr[i]);
-            double pagerank = (1.0 - DAMPING_FACTOR) + DAMPING_FACTOR * pr[i];
-            adjList[i]->value = pagerank;
-            
+        // Wait for the threads to finish
+        for (int i = 0; i < numThreads; i++) {
+            pthread_join(threads[i], NULL);
         }
     }
+    
+    // Destroy the barrier
+    pthread_barrier_destroy(&barrier);
 }
+
+
 
 int main(int argc, char **argv) {
         char line[256];
-        if (argc < 2) {
+        if (argc < 3) {
             printf("Not enough arguements were given\n");
             return 1;
         }
+        numThreads = atoi(argv[2]);
         FILE *fp = fopen(argv[1], "r"); // open file
         if (fp == NULL) {
             printf("File not found\n");
@@ -150,6 +185,12 @@ int main(int argc, char **argv) {
         printf("after main while loop\n");
         //printGraph(adjList);
         printf("%d nodes\n", numNodes);
+        if (numThreads > 4 || numThreads < 1) {
+            numThreads = 4;
+        }
+        chunkSize = numNodes / numThreads;
+        pthread_barrier_init(&barrier, NULL, numThreads);
+        // Run PageRank algorithm
         pagerank(adjList, numNodes, 500);
         // Write pagerank scores to file
         FILE *fop = fopen("output.csv", "w");
