@@ -20,12 +20,13 @@ typedef struct node{
 
 
 node *adjList[MAX];
-double sum[MAX] = {0};
-//double pr[MAX] = {0};
+double sum[MAX];
 int numNodes = 0;
 int numThreads = 0;
 int chunkSize = 0;
 pthread_barrier_t barrier;
+pthread_t threads[MAX_THREADS];
+thread_params params[MAX_THREADS];
 
 typedef struct thread_params {
     int start;
@@ -76,29 +77,26 @@ void* pagerank(void* arg) {
     for (int i = params->start; i < params->end; i++) {
         if (!nodeExists(params->adjList, i)) 
             continue;
-        
-        // Reset the pagerank value to 0 for this node
-        double pr = 0;
-        
+        if (adjList[i]->numOfNeighbors != 0)
+                sum[i] =  adjList[i]->value/adjList[i]->numOfNeighbors;
+            else 
+                sum[i] = 0;
+    }
+    // Reset the pagerank value to 0 for this node
+    for (int i = params->start; i < params->end; i++) {
+        if (!nodeExists(params->adjList, i)) 
+            continue;
+        double pr = 0;    
         // Calculate the pagerank value for this node based on its neighbors' values
         node *curr = params->adjList[i]->next; 
-        while (curr != NULL) { // for each neighbor
-            if (params->adjList[i]->numOfNeighbors != 0) {
-                pr += params->adjList[curr->vertex]->value / params->adjList[i]->numOfNeighbors;
-            }
+        while (curr != NULL) { // for each neighbor 
+            pr += sum[curr->vertex];
             curr = curr->next;
         }
         double pagerankval = (1.0 - DAMPING_FACTOR) + DAMPING_FACTOR * pr;
         params->adjList[i]->value = pagerankval;
     }
-
-    
-    
-    // Exit the thread
-    pthread_exit(NULL);
 }
-
-
 
 
 
@@ -154,8 +152,7 @@ int main(int argc, char **argv) {
         pthread_barrier_init(&barrier, NULL, numThreads);
         // Run PageRank algorithm
          // Create an array of thread IDs and thread parameters
-        pthread_t threads[MAX_THREADS];
-        thread_params params[MAX_THREADS];
+        
     
         // Initialize the barrier
         pthread_barrier_init(&barrier, NULL, numThreads);
