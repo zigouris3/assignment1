@@ -67,7 +67,7 @@ void addEdge(node** adjList, int src, int dest) {
 }
 
 
-void* pagerank_thread(void* arg) {
+void* pagerank(void* arg) {
     // Cast the void* argument to the correct type
     thread_params* params = (thread_params*) arg;
     
@@ -96,31 +96,7 @@ void* pagerank_thread(void* arg) {
 }
 
 void pagerank(node *adjList[], int numNodes, int numIterations) {
-    // Create an array of thread IDs and thread parameters
-    pthread_t threads[numThreads];
-    thread_params params[numThreads];
-    
-    // Initialize the barrier
-    pthread_barrier_init(&barrier, NULL, numThreads);
-
-    // Run PageRank algorithm for numIterations iterations
-    for (int iter = 0; iter < numIterations; iter++) {
-        // Create and start the threads
-        for (int i = 0; i < numThreads; i++) {
-            params[i].start = i * chunkSize;
-            params[i].end = (i == numThreads - 1) ? numNodes : params[i].start + chunkSize; // last thread gets the remainder as to not get out of bounds
-            params[i].adjList = adjList;
-            pthread_create(&threads[i], NULL, pagerank_thread, (void*) &params[i]);
-        }
-        
-        // Wait for the threads to finish
-        for (int i = 0; i < numThreads; i++) {
-            pthread_join(threads[i], NULL);
-        }
-    }
-    
-    // Destroy the barrier
-    pthread_barrier_destroy(&barrier);
+   
 }
 
 
@@ -179,7 +155,32 @@ int main(int argc, char **argv) {
         chunkSize = numNodes / numThreads;
         pthread_barrier_init(&barrier, NULL, numThreads);
         // Run PageRank algorithm
-        pagerank(adjList, numNodes, 500);
+         // Create an array of thread IDs and thread parameters
+        pthread_t threads[numThreads];
+        thread_params params[numThreads];
+    
+        // Initialize the barrier
+        pthread_barrier_init(&barrier, NULL, numThreads);
+
+        // Run PageRank algorithm for numIterations iterations
+        for (int iter = 0; iter < numIterations; iter++) {
+        // Create and start the threads
+            for (int i = 0; i < numThreads; i++) {
+                params[i].start = i * chunkSize;
+                params[i].end = (i == numThreads - 1) ? numNodes : params[i].start + chunkSize; // last thread gets the remainder as to not get out of bounds
+                params[i].adjList = adjList;
+                pthread_create(&threads[i], NULL, &pagerank, (void*) &params[i]);
+            }
+        
+            // Wait for the threads to finish
+            for (int i = 0; i < numThreads; i++) {
+                pthread_join(threads[i], NULL);
+            }
+        }
+    
+        // Destroy the barrier
+        pthread_barrier_destroy(&barrier);
+        //pagerank(adjList, numNodes, 500);
         // Write pagerank scores to file
         FILE *fop = fopen("output.csv", "w");
         fprintf(fop, "node,pagerank\n");
