@@ -137,6 +137,7 @@ void pagerank(node *adjList[], int numNodes, int numIterations) {
 
 
 int main(int argc, char **argv) {
+        time start = clock();
         char line[256];
         if (argc < 3) {
             printf("Not enough arguements were given\n");
@@ -201,5 +202,7 @@ int main(int argc, char **argv) {
             }
         }
         fclose(fop);
+        time end = clock();
+        printf("Time: %f seconds \n", (double)(end - start));
         return 0;
 }
