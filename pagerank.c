@@ -7,7 +7,6 @@
 // #include <unistd.h>
 #define MAX 50000  // max number of threads
 #define DAMPING_FACTOR 0.85
-#define print(fun,msg); printf("test in %s, %s\n", fun, msg);
 
 
 // the node struct, in which we have the vertex and the next node is a list of neighbors
@@ -48,8 +47,6 @@ node *createNode(long vertex) {
     newNode->value = 1.0;
     newNode->next = NULL;
     newNode->numOfNeighbors = 0;
-    //printf("vertex created: %d\n", newNode->vertex);
-    //pthread_mutex_init(&newNode->lock, NULL);
     return newNode;
 }
 
@@ -57,24 +54,16 @@ node *createNode(long vertex) {
 void addEdge(node** adjList, int src, int dest) {
     // Create a new node with the destination vertex
     node* newNode = createNode(src);
-    //print("addEdge", 2);
     // Traverse to the end of the adjacency list at the source vertex
     
     node* curr = adjList[dest];
-    //print("addEdge", 3);
-    //printf("source vertex: %d\nNow traversing neighbor list:\n", curr->vertex);
     while (curr->next != NULL) {
         curr = curr->next;
-        //printf("%d\n", curr->vertex);
     }
-    //print("addEdge", 4);
     // Add the new node to the end of the linked list
     curr->next = newNode;
-    //printf("newNode is added to the end of the linked list: %d\n", newNode->vertex);
-    //print("addEdge", 5);
     // Increment the numOfNeighbors variable of the destination node
-    adjList[src]->numOfNeighbors++;
-    // print("addEdge", 6);    
+    adjList[src]->numOfNeighbors++; 
 }
 
 
@@ -166,10 +155,10 @@ int main(int argc, char **argv) {
                 numNodes++;
             }
         }   
-        //printGraph(adjList);
+
+
         for (int i = 0; i < MAX; i++) {
             if (adjList[i] != NULL) {
-                //printf("vertex : %d\n", adjList[i]->vertex);
                 }
             }
         
@@ -183,9 +172,7 @@ int main(int argc, char **argv) {
             sscanf(line, "%d %d", &src, &dest);
             addEdge(adjList, src, dest); // add edge to graph
         }   
-        printf("after main while loop\n");
-        //printGraph(adjList);
-        printf("%d nodes\n", numNodes);
+        
         if (numThreads > 4 || numThreads < 1) {
             numThreads = 4;
         }
