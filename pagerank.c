@@ -1,6 +1,5 @@
 #include <assert.h>
 #include <pthread.h>
-#include <semaphore.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -21,11 +20,7 @@ typedef struct node{
 
 node *adjList[MAX];
 double sum[MAX];
-int numNodes = 0;
-int numThreads = 0;
-int chunkSize = 0;
 pthread_barrier_t barrier;
-pthread_t threads[MAX_THREADS];
 
 typedef struct thread_params {
     int start;
@@ -101,7 +96,10 @@ void* pagerank(void* arg) {
 
 
 int main(int argc, char **argv) {
-        
+        int numNodes = 0;
+        int numThreads = 0;
+        int chunkSize = 0;
+        pthread_t threads[MAX_THREADS];
         char line[256];
         if (argc < 3) {
             printf("Not enough arguements were given\n");
@@ -155,7 +153,7 @@ int main(int argc, char **argv) {
         // Create and start the threads
             for (int i = 0; i < numThreads; i++) {
                 params[i].start = i * chunkSize;
-                params[i].end = (i == numThreads - 1) ? numNodes : params[i].start + chunkSize; // last thread gets the remainder as to not get out of bounds
+                params[i].end = (i == numThreads - 1) ? numNodes : params[i].start + chunkSize; // last thread gets the remainder
                 params[i].adjList = adjList;
                 pthread_create(&threads[i], NULL, &pagerank, (void*) &params[i]);
             }
@@ -165,7 +163,7 @@ int main(int argc, char **argv) {
                 pthread_join(threads[i], NULL);
             }
         }
-    
+        pthread_exit(NULL);
         // Destroy the barrier
         pthread_barrier_destroy(&barrier);
         clock_t end = clock();
