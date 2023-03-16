@@ -151,13 +151,7 @@ int main(int argc, char **argv) {
         chunkSize = numNodes / numThreads;
         printf("Chunk size: %d, Nodes %d, Threads %d\n", chunkSize, numNodes, numThreads);
         pthread_barrier_init(&barrier, NULL, numThreads);
-        // Run PageRank algorithm
-         // Create an array of thread IDs and thread parameters
-        
     
-        // Initialize the barrier
-        pthread_barrier_init(&barrier, NULL, numThreads);
-
         for (int iter = 0; iter < 500; iter++) {
         // Create and start the threads
             for (int i = 0; i < numThreads; i++) {
@@ -175,6 +169,8 @@ int main(int argc, char **argv) {
     
         // Destroy the barrier
         pthread_barrier_destroy(&barrier);
+        clock_t end = clock();
+        printf("Time: %f seconds \n", (double)(end - start)/CLOCKS_PER_SEC);
         //pagerank(adjList, numNodes, 500);
         // Write pagerank scores to file
         FILE *fop = fopen("output.csv", "w");
@@ -185,7 +181,6 @@ int main(int argc, char **argv) {
             }
         }
         fclose(fop);
-        clock_t end = clock();
-        printf("Time: %f seconds \n", (double)(end - start)/CLOCKS_PER_SEC);
+        
         return 0;
 }
