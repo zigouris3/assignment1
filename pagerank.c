@@ -7,6 +7,7 @@
 // #include <unistd.h>
 #define MAX 50000  // max number of threads
 #define DAMPING_FACTOR 0.85
+#define MAX_THREADS 4
 
 
 // the node struct, in which we have the vertex and the next node is a list of neighbors
@@ -89,6 +90,8 @@ void* pagerank(void* arg) {
         double pagerankval = (1.0 - DAMPING_FACTOR) + DAMPING_FACTOR * pr;
         params->adjList[i]->value = pagerankval;
     }
+    printf("Before Barrier:\n");
+    pthread_barrier_wait(&barrier);
     
     // Exit the thread
     pthread_exit(NULL);
@@ -130,10 +133,6 @@ int main(int argc, char **argv) {
         }   
 
 
-        for (int i = 0; i < MAX; i++) {
-            if (adjList[i] != NULL) {
-                }
-            }
         
         // Add edges to graph
         rewind(fp);
@@ -153,8 +152,8 @@ int main(int argc, char **argv) {
         pthread_barrier_init(&barrier, NULL, numThreads);
         // Run PageRank algorithm
          // Create an array of thread IDs and thread parameters
-        pthread_t threads[numThreads];
-        thread_params params[numThreads];
+        pthread_t threads[MAX_THREADS];
+        thread_params params[MAX_THREADS];
     
         // Initialize the barrier
         pthread_barrier_init(&barrier, NULL, numThreads);
