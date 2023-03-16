@@ -87,17 +87,15 @@ void* pagerank(void* arg) {
             }
             curr = curr->next;
         }
-        double pagerank = (1.0 - DAMPING_FACTOR) + DAMPING_FACTOR * pr;
-        params->adjList[i]->value = pagerank;
+        double pagerankval = (1.0 - DAMPING_FACTOR) + DAMPING_FACTOR * pr;
+        params->adjList[i]->value = pagerankval;
     }
     
     // Exit the thread
     pthread_exit(NULL);
 }
 
-void pagerank(node *adjList[], int numNodes, int numIterations) {
-   
-}
+
 
 
 
@@ -162,8 +160,7 @@ int main(int argc, char **argv) {
         // Initialize the barrier
         pthread_barrier_init(&barrier, NULL, numThreads);
 
-        // Run PageRank algorithm for numIterations iterations
-        for (int iter = 0; iter < numIterations; iter++) {
+        for (int iter = 0; iter < 500; iter++) {
         // Create and start the threads
             for (int i = 0; i < numThreads; i++) {
                 params[i].start = i * chunkSize;
