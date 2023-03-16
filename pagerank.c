@@ -145,11 +145,10 @@ int main(int argc, char **argv) {
         }   
         
         clock_t start = clock();
-        if (numThreads < 1) {
+        if (numThreads < 1 || numThreads > 4    ) {
             numThreads = 4;
         }
         chunkSize = numNodes / numThreads;
-        printf("Chunk size: %d, Nodes %d, Threads %d\n", chunkSize, numNodes, numThreads);
         pthread_barrier_init(&barrier, NULL, numThreads);
     
         for (int iter = 0; iter < 500; iter++) {
