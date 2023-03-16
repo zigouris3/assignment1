@@ -103,7 +103,7 @@ void* pagerank(void* arg) {
 
 
 int main(int argc, char **argv) {
-        clock_t start = clock();
+        
         char line[256];
         if (argc < 3) {
             printf("Not enough arguements were given\n");
@@ -146,6 +146,7 @@ int main(int argc, char **argv) {
             addEdge(adjList, src, dest); // add edge to graph
         }   
         
+        clock_t start = clock();
         if (numThreads < 1) {
             numThreads = 4;
         }
