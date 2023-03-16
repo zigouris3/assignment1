@@ -14,7 +14,6 @@ typedef struct node{
   long numOfNeighbors;
   long vertex;
   double value;
-  // pthread_mutex_t lock;
   struct node* next;
 }node;
 
@@ -147,7 +146,7 @@ int main(int argc, char **argv) {
             addEdge(adjList, src, dest); // add edge to graph
         }   
         
-        if (numThreads > 4 || numThreads < 1) {
+        if (numThreads < 1) {
             numThreads = 4;
         }
         chunkSize = numNodes / numThreads;
