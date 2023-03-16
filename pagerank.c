@@ -163,7 +163,7 @@ int main(int argc, char **argv) {
                 pthread_join(threads[i], NULL);
             }
         }
-        pthread_exit(NULL);
+        //pthread_exit(NULL);
         // Destroy the barrier
         pthread_barrier_destroy(&barrier);
         clock_t end = clock();
