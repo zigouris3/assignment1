@@ -149,6 +149,7 @@ int main(int argc, char **argv) {
             numThreads = 4;
         }
         chunkSize = numNodes / numThreads;
+        printf("Chunk size: %d, Nodes %d, Threads %d\n", chunkSize, numNodes, numThreads);
         pthread_barrier_init(&barrier, NULL, numThreads);
         // Run PageRank algorithm
          // Create an array of thread IDs and thread parameters
