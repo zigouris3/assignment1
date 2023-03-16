@@ -90,7 +90,7 @@ void* pagerank(void* arg) {
         double pagerankval = (1.0 - DAMPING_FACTOR) + DAMPING_FACTOR * pr;
         params->adjList[i]->value = pagerankval;
     }
-    printf("Before Barrier:\n");
+    
     pthread_barrier_wait(&barrier);
     
     // Exit the thread
@@ -158,7 +158,7 @@ int main(int argc, char **argv) {
         // Initialize the barrier
         pthread_barrier_init(&barrier, NULL, numThreads);
 
-        for (int iter = 0; iter < 1; iter++) {
+        for (int iter = 0; iter < 500; iter++) {
         // Create and start the threads
             for (int i = 0; i < numThreads; i++) {
                 params[i].start = i * chunkSize;
