@@ -26,7 +26,6 @@ int numThreads = 0;
 int chunkSize = 0;
 pthread_barrier_t barrier;
 pthread_t threads[MAX_THREADS];
-thread_params params[MAX_THREADS];
 
 typedef struct thread_params {
     int start;
@@ -34,7 +33,7 @@ typedef struct thread_params {
     node** adjList;
 } thread_params;
 
-
+thread_params params[MAX_THREADS];
 
 int nodeExists(node *adjList[], int vertex) {
     if (adjList[vertex] == NULL)
@@ -160,9 +159,9 @@ int main(int argc, char **argv) {
         for (int iter = 0; iter < 500; iter++) {
         // Create and start the threads
             for (int i = 0; i < numThreads; i++) {
-                params[i].start = i * chunkSize;
-                params[i].end = (i == numThreads - 1) ? numNodes : params[i].start + chunkSize; // last thread gets the remainder as to not get out of bounds
-                params[i].adjList = adjList;
+                params[i]->start = i * chunkSize;
+                params[i]->end = (i == numThreads - 1) ? numNodes : params[i].start + chunkSize; // last thread gets the remainder as to not get out of bounds
+                params[i]->adjList = adjList;
                 pthread_create(&threads[i], NULL, &pagerank, (void*) &params[i]);
             }
         
