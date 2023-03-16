@@ -72,6 +72,7 @@ void* pagerank(void* arg) {
     thread_params* params = (thread_params*) arg;
     
     // Iterate through the nodes within the range
+    pthread_barrier_wait(&barrier);
     for (int i = params->start; i < params->end; i++) {
         if (!nodeExists(params->adjList, i)) 
             continue;
@@ -90,8 +91,8 @@ void* pagerank(void* arg) {
         double pagerankval = (1.0 - DAMPING_FACTOR) + DAMPING_FACTOR * pr;
         params->adjList[i]->value = pagerankval;
     }
+
     
-    pthread_barrier_wait(&barrier);
     
     // Exit the thread
     pthread_exit(NULL);
