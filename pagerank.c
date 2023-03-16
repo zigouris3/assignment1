@@ -72,7 +72,7 @@ void* pagerank(void* arg) {
     thread_params* params = (thread_params*) arg;
     
     // Iterate through the nodes within the range
-    pthread_barrier_wait(&barrier);
+    
     for (int i = params->start; i < params->end; i++) {
         if (!nodeExists(params->adjList, i)) 
             continue;
@@ -81,6 +81,7 @@ void* pagerank(void* arg) {
             else 
                 sum[i] = 0;
     }
+    pthread_barrier_wait(&barrier);
     // Reset the pagerank value to 0 for this node
     for (int i = params->start; i < params->end; i++) {
         if (!nodeExists(params->adjList, i)) 
