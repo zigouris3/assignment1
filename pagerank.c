@@ -68,7 +68,7 @@ void* pagerank(void* arg) {
     thread_params* params = (thread_params*) arg;
     
     //printf("Starting value IN PAGERANK: %d", params->start);
-    printf("Starting value IN PAGERANK: %d", params->end);
+    printf("Starting value IN PAGERANK: %d\n", params->end);
     for (int i = params->start; i < params->end; i++) {
         if (!nodeExists(i)) 
             continue;
