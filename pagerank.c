@@ -26,7 +26,6 @@ pthread_barrier_t barrier;
 typedef struct thread_params {
     int start;
     int end;
-    node** adjList;
 } thread_params;
 
 thread_params params[MAX_THREADS];
@@ -75,6 +74,7 @@ void* pagerank(void* arg) {
         if (adjList[i]->numOfNeighbors != 0){
                 printf("Node %d value: %f\n", i, adjList[i]->value);
                 sum[i] =  adjList[i]->value/adjList[i]->numOfNeighbors;
+                printf("sum value: %f\n", i, sum[i]);
         }
             else 
                 sum[i] = 0;
