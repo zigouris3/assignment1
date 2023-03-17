@@ -67,7 +67,7 @@ void* pagerank(void* arg) {
     thread_params* params = (thread_params*) arg;
     
     //printf("Starting value IN PAGERANK: %d", params->start);
-    
+    printf("Starting value IN PAGERANK: %d", params->end);
     for (int i = params->start; i < params->end; i++) {
         if (!nodeExists(i)) 
             continue;
@@ -79,7 +79,9 @@ void* pagerank(void* arg) {
             else 
                 sum[i] = 0;
     }
+    printf("before barrier\n");
     pthread_barrier_wait(&barrier);
+    printf("after barrier\n");
     // Reset the pagerank value to 0 for this node
     for (int i = params->start; i < params->end; i++) {
         if (!nodeExists(i)) 
