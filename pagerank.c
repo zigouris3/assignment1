@@ -70,7 +70,7 @@ void* pagerank(void* arg) {
     printf("Starting value IN PAGERANK: %d", params->start);
     
     for (int i = params->start; i < params->end; i++) {
-        if (!nodeExists(adjList, i)) 
+        if (!nodeExists(i)) 
             continue;
         if (adjList[i]->numOfNeighbors != 0){
                 printf("Node %d value: %f\n", i, adjList[i]->value);
@@ -82,7 +82,7 @@ void* pagerank(void* arg) {
     pthread_barrier_wait(&barrier);
     // Reset the pagerank value to 0 for this node
     for (int i = params->start; i < params->end; i++) {
-        if (!nodeExists(adjList, i)) 
+        if (!nodeExists(i)) 
             continue;
         pr[i]=0;    
         // Calculate the pagerank value for this node based on its neighbors' values
