@@ -20,6 +20,7 @@ typedef struct node{
 
 node *adjList[MAX];
 double sum[MAX];
+double pr[MAX];
 pthread_barrier_t barrier;
 
 typedef struct thread_params {
@@ -30,7 +31,7 @@ typedef struct thread_params {
 
 thread_params params[MAX_THREADS];
 
-int nodeExists(node *adjList[], int vertex) {
+int nodeExists(int vertex) {
     if (adjList[vertex] == NULL)
         return 0;
     return 1;
@@ -46,7 +47,7 @@ node *createNode(long vertex) {
 }
 
 
-void addEdge(node** adjList, int src, int dest) {
+void addEdge(int src, int dest) {
     // Create a new node with the destination vertex
     node* newNode = createNode(src);
     // Traverse to the end of the adjacency list at the source vertex
@@ -69,7 +70,7 @@ void* pagerank(void* arg) {
     printf("Starting value IN PAGERANK: %d", params->start);
     
     for (int i = params->start; i < params->end; i++) {
-        if (!nodeExists(params->adjList, i)) 
+        if (!nodeExists(adjList, i)) 
             continue;
         if (adjList[i]->numOfNeighbors != 0){
                 printf("Node %d value: %f\n", i, adjList[i]->value);
@@ -81,17 +82,17 @@ void* pagerank(void* arg) {
     pthread_barrier_wait(&barrier);
     // Reset the pagerank value to 0 for this node
     for (int i = params->start; i < params->end; i++) {
-        if (!nodeExists(params->adjList, i)) 
+        if (!nodeExists(adjList, i)) 
             continue;
-        double pr = 0;    
+        pr[i]=0;    
         // Calculate the pagerank value for this node based on its neighbors' values
-        node *curr = params->adjList[i]->next; 
+        node *curr = adjList[i]->next; 
         while (curr != NULL) { // for each neighbor 
-            pr += sum[curr->vertex];
+            pr[i] += sum[curr->vertex];
             curr = curr->next;
         }
-        double pagerankval = (1.0 - DAMPING_FACTOR) + DAMPING_FACTOR * pr;
-        params->adjList[i]->value = pagerankval;
+        double pagerankval = (1.0 - DAMPING_FACTOR) + DAMPING_FACTOR * pr[i];
+        adjList[i]->value = pagerankval;
     }
 }
 
@@ -141,7 +142,7 @@ int main(int argc, char **argv) {
             }
             int src, dest;
             sscanf(line, "%d %d", &src, &dest);
-            addEdge(adjList, src, dest); // add edge to graph
+            addEdge(src, dest); // add edge to graph
         }   
         
         clock_t start = clock();
