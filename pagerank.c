@@ -66,15 +66,15 @@ void* pagerank(void* arg) {
     // Cast the void* argument to the correct type
     thread_params* params = (thread_params*) arg;
     
-    printf("Starting value IN PAGERANK: %d", params->start);
+    //printf("Starting value IN PAGERANK: %d", params->start);
     
     for (int i = params->start; i < params->end; i++) {
         if (!nodeExists(i)) 
             continue;
         if (adjList[i]->numOfNeighbors != 0){
-                printf("Node %d value: %f\n", i, adjList[i]->value);
+                //printf("Node %d value: %f\n", i, adjList[i]->value);
                 sum[i] =  adjList[i]->value/adjList[i]->numOfNeighbors;
-                printf("sum value: %f\n", i, sum[i]);
+                //printf("sum value: %f\n", i, sum[i]);
         }
             else 
                 sum[i] = 0;
@@ -152,7 +152,7 @@ int main(int argc, char **argv) {
         chunkSize = numNodes / numThreads;
         pthread_barrier_init(&barrier, NULL, numThreads);
     
-        for (int iter = 0; iter < 2; iter++) {
+        for (int iter = 0; iter < 500; iter++) {
         // Create and start the threads
             for (int i = 0; i < numThreads; i++) {
                 params[i].start = i * chunkSize;
