@@ -157,7 +157,6 @@ int main(int argc, char **argv) {
             for (int i = 0; i < numThreads; i++) {
                 params[i].start = i * chunkSize;
                 params[i].end = (i == numThreads - 1) ? numNodes : params[i].start + chunkSize; // last thread gets the remainder
-                params[i].adjList = adjList;
                 pthread_create(&threads[i], NULL, &pagerank, (void*) &params[i]);
             }
         
