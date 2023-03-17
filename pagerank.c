@@ -133,8 +133,6 @@ int main(int argc, char **argv) {
             }
         }   
 
-
-        
         // Add edges to graph
         rewind(fp);
         while (fgets(line, sizeof(line), fp)) {
@@ -182,6 +180,6 @@ int main(int argc, char **argv) {
             }
         }
         fclose(fop);
-        
+        pthread_exit(NULL);
         return 0;
 }
