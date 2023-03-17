@@ -63,25 +63,18 @@ void addEdge(int src, int dest) {
 
 
 void* pagerank(void* arg) {
-    clock_t start = clock();
     // Cast the void* argument to the correct type
     thread_params* params = (thread_params*) arg;
     
-    //printf("Starting value IN PAGERANK: %d", params->start);
-    printf("Starting value IN PAGERANK: %d\n", params->end);
     for (int i = params->start; i < params->end; i++) {
         if (!nodeExists(i)) 
             continue;
-        if (adjList[i]->numOfNeighbors != 0){
-                //printf("Node %d value: %f\n", i, adjList[i]->value);
+        if (adjList[i]->numOfNeighbors != 0)
                 sum[i] =  adjList[i]->value/adjList[i]->numOfNeighbors;
-                //printf("sum value: %f\n", i, sum[i]);
-        }
+        
             else 
                 sum[i] = 0;
     }
-    clock_t end = clock();
-    printf("Time elapsed: %f\n", (double)(end - start) / CLOCKS_PER_SEC);
     pthread_barrier_wait(&barrier);
     
     // Reset the pagerank value to 0 for this node
@@ -154,7 +147,7 @@ int main(int argc, char **argv) {
         chunkSize = numNodes / numThreads;
         pthread_barrier_init(&barrier, NULL, numThreads);
     
-        for (int iter = 0; iter < 1; iter++) {
+        for (int iter = 0; iter < 500; iter++) {
         // Create and start the threads
             for (int i = 0; i < numThreads; i++) {
                 params[i].start = i * chunkSize;
@@ -167,12 +160,10 @@ int main(int argc, char **argv) {
                 pthread_join(threads[i], NULL);
             }
         }
-        //pthread_exit(NULL);
         // Destroy the barrier
         pthread_barrier_destroy(&barrier);
         clock_t end = clock();
         printf("Time: %f seconds \n", (double)(end - start)/CLOCKS_PER_SEC);
-        //pagerank(adjList, numNodes, 500);
         // Write pagerank scores to file
         FILE *fop = fopen("output.csv", "w");
         fprintf(fop, "node,pagerank\n");
