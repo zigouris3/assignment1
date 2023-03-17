@@ -80,10 +80,10 @@ void* pagerank(void* arg) {
             else 
                 sum[i] = 0;
     }
-    printf("before barrier\n");
-    pthread_barrier_wait(&barrier);
     clock_t end = clock();
     printf("Time elapsed: %f\n", (double)(end - start) / CLOCKS_PER_SEC);
+    pthread_barrier_wait(&barrier);
+    
     // Reset the pagerank value to 0 for this node
     for (int i = params->start; i < params->end; i++) {
         if (!nodeExists(i)) 
