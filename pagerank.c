@@ -66,12 +66,13 @@ void* pagerank(void* arg) {
     // Cast the void* argument to the correct type
     thread_params* params = (thread_params*) arg;
     
-    // Iterate through the nodes within the range
+    printf("Starting value IN PAGERANK: %d", params->start);
     
     for (int i = params->start; i < params->end; i++) {
         if (!nodeExists(params->adjList, i)) 
             continue;
         if (adjList[i]->numOfNeighbors != 0)
+                printf("Node %d value: %f\n", i, adjList[i]->value);
                 sum[i] =  adjList[i]->value/adjList[i]->numOfNeighbors;
             else 
                 sum[i] = 0;
