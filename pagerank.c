@@ -154,7 +154,7 @@ int main(int argc, char **argv) {
         chunkSize = numNodes / numThreads;
         pthread_barrier_init(&barrier, NULL, numThreads);
     
-        for (int iter = 0; iter < 3; iter++) {
+        for (int iter = 0; iter < 1; iter++) {
         // Create and start the threads
             for (int i = 0; i < numThreads; i++) {
                 params[i].start = i * chunkSize;
