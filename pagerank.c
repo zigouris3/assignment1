@@ -63,6 +63,7 @@ void addEdge(int src, int dest) {
 
 
 void* pagerank(void* arg) {
+    clock_t start = clock();
     // Cast the void* argument to the correct type
     thread_params* params = (thread_params*) arg;
     
@@ -81,7 +82,8 @@ void* pagerank(void* arg) {
     }
     printf("before barrier\n");
     pthread_barrier_wait(&barrier);
-    printf("after barrier\n");
+    clock_t end = clock();
+    printf("Time elapsed: %f\n", (double)(end - start) / CLOCKS_PER_SEC););
     // Reset the pagerank value to 0 for this node
     for (int i = params->start; i < params->end; i++) {
         if (!nodeExists(i)) 
@@ -152,7 +154,7 @@ int main(int argc, char **argv) {
         chunkSize = numNodes / numThreads;
         pthread_barrier_init(&barrier, NULL, numThreads);
     
-        for (int iter = 0; iter < 500; iter++) {
+        for (int iter = 0; iter < 3; iter++) {
         // Create and start the threads
             for (int i = 0; i < numThreads; i++) {
                 params[i].start = i * chunkSize;
