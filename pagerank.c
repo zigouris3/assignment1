@@ -97,7 +97,6 @@ void* pagerank(void* arg) {
 }
 
 
-
 int main(int argc, char **argv) {
         int numNodes = 0;
         int numThreads = 0;
@@ -147,6 +146,7 @@ int main(int argc, char **argv) {
         
         clock_t start = clock();
         if (numThreads < 1 || numThreads > 4    ) {
+            printf("Invalid number of threads. Using 4 threads instead.\n");
             numThreads = 4;
         }
         chunkSize = numNodes / numThreads;
