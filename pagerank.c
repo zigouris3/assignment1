@@ -71,9 +71,10 @@ void* pagerank(void* arg) {
     for (int i = params->start; i < params->end; i++) {
         if (!nodeExists(params->adjList, i)) 
             continue;
-        if (adjList[i]->numOfNeighbors != 0)
+        if (adjList[i]->numOfNeighbors != 0){
                 printf("Node %d value: %f\n", i, adjList[i]->value);
                 sum[i] =  adjList[i]->value/adjList[i]->numOfNeighbors;
+        }
             else 
                 sum[i] = 0;
     }
@@ -150,7 +151,7 @@ int main(int argc, char **argv) {
         chunkSize = numNodes / numThreads;
         pthread_barrier_init(&barrier, NULL, numThreads);
     
-        for (int iter = 0; iter < 500; iter++) {
+        for (int iter = 0; iter < 2; iter++) {
         // Create and start the threads
             for (int i = 0; i < numThreads; i++) {
                 params[i].start = i * chunkSize;
